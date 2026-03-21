@@ -9,66 +9,92 @@ variable "vpc_cidr_block" {
   default = "10.0.0.0/16"
 }
 ################ Variaveis para Subnet Priv A ################
+# variable "subnet_configs" {
+#   type = map(any)
+#   default = {
+#     "subnet-priv-a-tech-challenge" = {
+#       availability_zone = "subnet-priv-b-tech-challenge"
+#       cidr_block = "10.0.1.0/24"
+#       nat_subnet = true
+#     },
+#     "subnet-priv-b-tech-challenge" = {
+#       availability_zone = "us-east-1b"
+#       cidr_block = "10.0.3.0/24"
+#       nat_subnet = true
+#     },
+#     "subnet-pub-a-tech-challenge" = {
+#       availability_zone = "us-east-1a"
+#       cidr_block = "10.0.2.0/24"
+#       nat_subnet = false
+#     },
+#     "subnet_pub_b_cidr_block" = {
+#       availability_zone = "us-east-1b"
+#       cidr_block = "10.0.4.0/24"
+#       nat_subnet = false
+#     }
+#   }
+# }
 variable "subnet_priv_a_cidr_block" {
-  type    = string
-  default = "10.0.1.0/24"
+ type    = string
+ default = "10.0.1.0/24"
 }
 
 variable "subnet_priv_a_tag_name" {
-  type    = string
-  default = "subnet-priv-a-tech-challenge"
+ type    = string
+ default = "subnet-priv-a-tech-challenge"
 }
 
 variable "subnet_priv_a_availability_zone" {
-  type    = string
-  default = "us-east-1a"
+ type    = string
+ default = "us-east-1a"
 }
 ################ Variaveis para Subnet Priv B ################
 variable "subnet_priv_b_cidr_block" {
-  type    = string
-  default = "10.0.3.0/24"
+ type    = string
+ default = "10.0.3.0/24"
 }
 
 variable "subnet_priv_b_tag_name" {
-  type    = string
-  default = "subnet-priv-b-tech-challenge"
+ type    = string
+ default = "subnet-priv-b-tech-challenge"
 }
 
 variable "subnet_priv_b_availability_zone" {
-  type    = string
-  default = "us-east-1b"
+ type    = string
+ default = "us-east-1b"
 }
 
 ################ Variaveis para Subnet Pub A ################
+
 variable "subnet_pub_a_cidr_block" {
-  type    = string
-  default = "10.0.2.0/24"
+ type    = string
+ default = "10.0.2.0/24"
 }
 
 variable "subnet_pub_a_tag_name" {
-  type    = string
+ type    = string
   default = "subnet-pub-a-tech-challenge"
 }
 
 variable "subnet_pub_a_availability_zone" {
-  type    = string
-  default = "us-east-1a"
+ type    = string
+ default = "us-east-1a"
 }
 
 ################ Variaveis para Subnet Pub B ################
 variable "subnet_pub_b_cidr_block" {
-  type    = string
-  default = "10.0.4.0/24"
+ type    = string
+ default = "10.0.4.0/24"
 }
 
 variable "subnet_pub_b_tag_name" {
-  type    = string
-  default = "subnet-pub-b-tech-challenge"
+ type    = string
+ default = "subnet-pub-b-tech-challenge"
 }
 
 variable "subnet_pub_b_availability_zone" {
-  type    = string
-  default = "us-east-1b"
+ type    = string
+ default = "us-east-1b"
 }
 
 ################ Variaveis para IGW ################
@@ -330,4 +356,61 @@ variable "targeting_service_availability_zone" {
   type = string
   default = "us-east-1a"
   description = "Zona de disponibilidade para o banco de dados."
+}
+
+################ Variaveis para o Redis ################
+variable "redis_name" {
+  type        = string
+  default     = "redis-tech-challenge"
+  description = "Nome para o vaulkey."
+}
+
+variable "major_engine_version" {
+  type        = string
+  default     = "8"
+  description = "Versao do engine do Vaulkey."
+}
+
+################ Variaveis para o SQS ################
+variable "sqs_name" {
+    type        = string 
+    default     = "sqs-tech-challenge"
+    description = "Nome da fila SQS"
+}
+
+variable "delay_seconds" {
+    description = "Tempo de delay para as mensagens entregues a fila"
+    type        = string 
+    default     = "0"
+}
+
+variable "max_message_size" {
+    description = "Limite de quantos bytes uma mensagem pode ter"
+    type        = string 
+    default     = "2048"
+}
+
+variable "message_retention_seconds" {
+    description = "Segundos em que a mensagem é retida na fila" 
+    type        = string 
+    default     = "345600"
+}
+
+variable "receive_wait_time_seconds" {
+    description = "Tempo de uma chamada do tipo `ReceiveMessage call` espera para ser entregue antes de retornar"
+    type        = string 
+    default     = "0"
+}
+
+################ Variaveis para o ECR ################
+variable "ecr_repository_name" {
+    type    = list(string)
+    default = ["tech-challenge/auth-service","tech-challenge/evaluation-service","tech-challenge/flag-service","tech-challenge/analytics-service","tech-challenge/targeting-service"]
+    description = "Lista de repositorios a serem criados"
+}
+
+variable "image_tag_mutability" {
+    type    = string
+    default = "MUTABLE"
+    description = "Definir se as tags de imagens sao mutaveis ou imutaveis"
 }

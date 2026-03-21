@@ -1,28 +1,37 @@
-module "vpc" {
-    source          = "./modules/network/vpc"
+# module "network" {
+#     source          = "./modules/network"
+#     vpc_cidr_block  = var.vpc_cidr_block
+#     vpc_tag_name    = var.vpc_tag_name
+#     subnet_config   = var.subnet_configs
+#     igw_tag_name    = var.igw_tag_name
+#     ngw_tag_name    = var.ngw_tag_name
+# }
 
-    vpc_cidr_block  = var.vpc_cidr_block
-    tag_name        = var.tag_name
+module "vpc" {
+   source          = "./modules/network/vpc"
+
+   vpc_cidr_block  = var.vpc_cidr_block
+   tag_name        = var.tag_name
 }
 
 module "subnet_priv_a" {
-    source              = "./modules/network/subnet"
+   source              = "./modules/network/subnet"
 
-    cidr_block          = var.subnet_priv_a_cidr_block
-    availability_zone   = var.subnet_priv_a_availability_zone
-    tag_name            = var.subnet_priv_a_tag_name
-    vpc_id              = module.vpc.vpc_id
+   cidr_block          = var.subnet_priv_a_cidr_block
+   availability_zone   = var.subnet_priv_a_availability_zone
+   tag_name            = var.subnet_priv_a_tag_name
+   vpc_id              = module.vpc.vpc_id
 
 depends_on = [module.vpc]
 }
 
 module "subnet_priv_b" {
-    source              = "./modules/network/subnet"
+   source              = "./modules/network/subnet"
 
-    cidr_block          = var.subnet_priv_b_cidr_block
-    availability_zone   = var.subnet_priv_b_availability_zone
-    tag_name            = var.subnet_priv_b_tag_name
-    vpc_id              = module.vpc.vpc_id
+   cidr_block          = var.subnet_priv_b_cidr_block
+   availability_zone   = var.subnet_priv_b_availability_zone
+   tag_name            = var.subnet_priv_b_tag_name
+   vpc_id              = module.vpc.vpc_id
 
 depends_on = [module.vpc]
 }
@@ -93,7 +102,7 @@ module "eks_cluster" {
     cluster_version  = var.cluster_version
     subnet_id_a      = module.subnet_pub_a.aws_subnet_id
     subnet_id_b      = module.subnet_pub_b.aws_subnet_id
-depends_on = [ module.route_table_pub ]
+depends_on = [ module.network ]
 }
 
 module "eks_node_group" {
@@ -116,7 +125,7 @@ module "db_subnet_group_name" {
     db_subnet_group_name = var.db_subnet_group_name
     db_subnet_group      = [module.subnet_priv_a.aws_subnet_id,module.subnet_priv_b.aws_subnet_id]
 
-depends_on = [ module.route_table_priv ]
+depends_on = [ module.network ]
 }
 
 module "auth_service_db" {
@@ -168,4 +177,29 @@ module "targeting_service_db" {
     storage_type            = var.targeting_service_storage_type
     vpc_security_group_ids  = var.targeting_service_db_vpc_security_group_ids 
 depends_on = [ module.db_subnet_group_name ]
+}
+
+module "redis" {
+    source                  = "./modules/database/rds/redis"
+    subnet_ids              = [module.subnet_priv_a.aws_subnet_id,module.subnet_priv_b.aws_subnet_id]
+    redis_name              = var.redis_name
+    major_engine_version    = var.major_engine_version
+
+depends_on = [ module.db_subnet_group_name ]
+}
+
+module "sqs" {
+    source                      = "./modules/sqs"
+    sqs_name                    = var.sqs_name
+    delay_seconds               = var.delay_seconds
+    max_message_size            = var.max_message_size
+    message_retention_seconds   = var.message_retention_seconds
+    receive_wait_time_seconds   = var.receive_wait_time_seconds
+depends_on = [ module.route_table_priv ]
+}
+
+module "ecr" {
+    source               = "./modules/ecr"
+    ecr_repository_name  = var.ecr_repository_name
+    image_tag_mutability = var.image_tag_mutability
 }
