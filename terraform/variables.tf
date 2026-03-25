@@ -88,7 +88,7 @@ variable "service_api_key" {
 variable "gitops_repo_url" {
   description = "URL do repositorio Git que o ArgoCD monitora para sincronizar os deploys"
   type        = string
-  default     = "https://github.com/fsampaio21/fiap-etapa-3.git"
+  default     = "https://github.com/lugentil/fiap-etapa-3.git"
 }
 
 variable "aws_credentials" {
