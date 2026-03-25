@@ -21,7 +21,7 @@ spec:
         - name: ecr-secret
       containers:
         - name: flag-service
-          image: 730335515098.dkr.ecr.us-east-1.amazonaws.com/togglemaster/flag-service:b369486ba6b584fd8eaa7e39fae78bf8c244a042
+          image: 730335515098.dkr.ecr.us-east-1.amazonaws.com/togglemaster/flag-service:0a09b023e5d134f719202ed9f165ec85c59dea89
           imagePullPolicy: Always
           ports:
             - containerPort: 8002
