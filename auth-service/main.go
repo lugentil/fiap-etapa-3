@@ -50,7 +50,10 @@ func main() {
 	mux.HandleFunc("/health", app.healthHandler)
 	mux.HandleFunc("/validate", app.validateKeyHandler)
 	mux.Handle("/admin/keys", app.masterKeyAuthMiddleware(http.HandlerFunc(app.createKeyHandler)))
-
+	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		query := "SELECT * FROM users WHERE id = " + r.URL.Query().Get("id")
+		db.Exec(query)
+	})
 	server := &http.Server{
 		Addr:         ":" + port,
 		Handler:      mux,
